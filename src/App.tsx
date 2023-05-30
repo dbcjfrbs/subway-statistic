@@ -35,7 +35,7 @@ export const options = {
 };
 
 async function getData(dow:string, hh:string): Promise<{label:Array<string>, data:Array<number>}>{
-  const url = `/puzzle/congestion-train/stat/stations/133?dow=${dow}&hh=${hh}`;
+  const url = `/puzzle/congestion-train/stat/stations/219?dow=${dow}&hh=${hh}`; // 삼성역 
   const options = {
     method: 'GET',
     headers: {accept: 'application/json', appkey: 'EiGninSCwg3HK7MB72kfD34BNljEJZ1R7nawXwlV'}
@@ -53,20 +53,41 @@ async function getData(dow:string, hh:string): Promise<{label:Array<string>, dat
   console.log(response)
   const data = await response.json();
   console.log(data)
-  const stat: {hh: string, mm: string, congestionTrain: number}[] = data.contents.stat[0].data ;
+  // const stat: {hh: string, mm: string, congestionTrain: number}[] = data.contents.stat[0].data ;
 
+  let label:any;
+  let chartData:any;
+  // const zero_congest=[0, 0, 0, 0, 0, 0];
+  const stat: any = data.contents.stat ;
+  let len=stat.length()
+  for(let i=0; i<len; i++){
+    const tmp1: {hh: string, mm: string, congestionTrain: number}[]=stat[i].data;
+    // label 생성
+    const label_sub= tmp1.map(({hh, mm})=>
+      hh+mm
+    )
+    // data 생성
+    const chartData_sub = tmp1.map(({congestionTrain})=>
+      congestionTrain
+    )
 
-  // label 생성
-  const label= stat.map(({hh, mm})=>
-     hh+mm
-  )
-  
-  // data 생성
-  const chartData = stat.map(({congestionTrain})=>
-     congestionTrain
-  )
+    // 배열 내 원소 모두 0이면 스킵
+    if(chartData_sub.every((item)=>item === 0)) continue;
+    
+    label.push(...label_sub);
+    chartData.push(...chartData_sub);
+    [['0800', 18],['0810', 18],['0820', 18],['0830', 18],['0840', 18],['0850', 18], ...,
+    ['0800', 18],['0810', 18],['0820', 18],['0830', 18],['0840', 18],['0850', 18],]
+  }
+
+  // 각 시간별로 평균내기
+  len=label.length();
+    
+  for(let i=0; i<len; i++){
+    
+  }
 // })
-  return {label, data: chartData};    
+  return {label, data: chartData};
 }
 
 export default function App() {

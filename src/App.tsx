@@ -11,6 +11,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import "./App.css";
+import { CongestionDataType } from "./component/stat";
 
 ChartJS.register(
   CategoryScale,
@@ -57,18 +58,14 @@ async function getData(
   //   return response.status
   // }
   console.log(response);
-  const data = await response.json();
+  const data = (await response.json()) as CongestionDataType;
   console.log(data);
-  // const stat: {hh: string, mm: string, congestionTrain: number}[] = data.contents.stat[0].data ;
 
-  let label: any[] = [];
-  let chartData: any = [];
-  // const zero_congest=[0, 0, 0, 0, 0, 0];
-  const { stat }: { stat: any[] } = data.contents;
-  const datas = stat.reduce((res: Record<string, number[]>, { data }: any) => {
+  const { stat } = data.contents;
+  const datas = stat.reduce((res: Record<string, number[]>, { data }) => {
     const obj = { ...res };
     const temp = data.reduce(
-      (acc: Record<string, number>, { hh, mm, congestionTrain }: any) => ({
+      (acc: Record<string, number>, { hh, mm, congestionTrain }) => ({
         ...acc,
         [`${hh}${mm}`]: congestionTrain,
       }),
